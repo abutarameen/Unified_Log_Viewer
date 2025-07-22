@@ -24,6 +24,18 @@ python log_unifier.py
 
 The script downloads the logs and merges them into `merged_logs.jsonl`.
 
+## Desktop GUI
+
+`desktop_unifier.py` provides a very small Tkinter interface. Use the **Settings**
+menu to enter your AWS keys, S3 bucket information, and Crashlytics/BigQuery
+credentials. These details are saved to `settings.json` for next time.
+
+Run the GUI with:
+
+```bash
+python desktop_unifier.py
+```
+
 ## Disclaimer
 
 This is a minimal example intended for demonstration purposes only. A production-ready desktop application would require additional features such as a graphical user interface, incremental log fetching, and error handling.
