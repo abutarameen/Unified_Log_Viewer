@@ -36,4 +36,4 @@ python desktop_unifier.py
 
 ## Disclaimer
 
-This is a minimal example intended for demonstration purposes only. A production-ready desktop application would require additional features such as a graphical user interface, incremental log fetching, and robust error handling.
+This is a minimal example intended for demonstration purposes only. A production ready desktop application would require additional features such as a graphical user interface, incremental log fetching, and robust error handling.

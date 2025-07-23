@@ -64,7 +64,9 @@ def merge_logs(cfg: dict) -> None:
     with output_file.open("w", encoding="utf-8") as f:
         for entry in s3_logs + crash_logs:
             f.write(json.dumps(entry) + "\n")
-    messagebox.showinfo("Done", f"Merged {len(s3_logs) + len(crash_logs)} records into {output_file}")
+    messagebox.showinfo(
+        "Done", f"Merged {len(s3_logs) + len(crash_logs)} records into {output_file}"
+    )
 
 
 class SettingsWindow(tk.Toplevel):
@@ -88,9 +90,13 @@ class SettingsWindow(tk.Toplevel):
         }
         self.vars = {}
         for idx, (label, key) in enumerate(entries.items()):
-            ttk.Label(self, text=label).grid(row=idx, column=0, sticky="e", padx=5, pady=2)
+            ttk.Label(self, text=label).grid(
+                row=idx, column=0, sticky="e", padx=5, pady=2
+            )
             var = tk.StringVar(value=cfg.get(key, ""))
-            ttk.Entry(self, textvariable=var, width=40).grid(row=idx, column=1, padx=5, pady=2)
+            ttk.Entry(self, textvariable=var, width=40).grid(
+                row=idx, column=1, padx=5, pady=2
+            )
             self.vars[key] = var
 
         btn = ttk.Button(self, text="Save", command=self.save)
