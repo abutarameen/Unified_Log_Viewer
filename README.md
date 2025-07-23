@@ -16,7 +16,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-Run `desktop_unifier.py` and open the **Settings** menu to enter your AWS keys, S3 bucket details, and Crashlytics/Firebase credentials. These values are stored in `settings.json` and used by both the GUI and the `log_unifier.py` CLI tool. After saving your settings, run the unifier script:
+Run `desktop_unifier.py` and open the **Settings** menu to enter your AWS keys, S3 bucket details, and Crashlytics/Firebase credentials. These values are stored in `settings.json` and used by both the GUI and the `log_unifier.py` CLI tool. The file is excluded from version control via `.gitignore`, so your credentials remain local. After saving your settings, run the unifier script:
 
 ```bash
 python log_unifier.py
