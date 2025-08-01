@@ -5,10 +5,80 @@ import boto3
 from google.cloud import bigquery
 
 SETTINGS_FILE = Path("settings.json")
+AWS_CONFIG_FILE = Path("awsconfiguration.json")
 OUTPUT_FILE = Path("merged_logs.jsonl")
 
 
 def load_settings() -> dict:
+    if not SETTINGS_FILE.exists():
+        raise RuntimeError(
+            "settings.json not found. Run desktop_unifier.py to configure settings."
+        )
+
+    with SETTINGS_FILE.open("r", encoding="utf-8") as f:
+        cfg = json.load(f)
+    return cfg
+
+
+def apply_aws_config(cfg: dict) -> dict:
+    """Populate S3 bucket and region from an awsconfiguration.json file if present."""
+    path = Path(cfg.get("aws_config_file", AWS_CONFIG_FILE))
+    if not path.exists():
+        return cfg
+
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        bucket = (
+            data.get("storage", {})
+            .get("plugins", {})
+            .get("awsS3StoragePlugin", {})
+            .get("bucket")
+        )
+        region = (
+            data.get("storage", {})
+            .get("plugins", {})
+            .get("awsS3StoragePlugin", {})
+            .get("region")
+        )
+        if not bucket:
+            bucket = (
+                data.get("S3TransferUtility", {})
+                .get("Default", {})
+                .get("Bucket")
+            )
+            region = (
+                data.get("S3TransferUtility", {})
+                .get("Default", {})
+                .get("Region")
+            )
+        if not bucket:
+            bucket = (
+                data.get("auth", {})
+                .get("plugins", {})
+                .get("awsCognitoAuthPlugin", {})
+                .get("S3TransferUtility", {})
+                .get("Default", {})
+                .get("Bucket")
+            )
+            region = (
+                data.get("auth", {})
+                .get("plugins", {})
+                .get("awsCognitoAuthPlugin", {})
+                .get("S3TransferUtility", {})
+                .get("Default", {})
+                .get("Region")
+            )
+
+        if bucket and "s3_bucket" not in cfg:
+            cfg["s3_bucket"] = bucket
+        if region and "aws_region" not in cfg:
+            cfg["aws_region"] = region
+    except Exception:
+        pass
+
+    return cfg
     if SETTINGS_FILE.exists():
         with SETTINGS_FILE.open("r", encoding="utf-8") as f:
             return json.load(f)
@@ -22,6 +92,7 @@ def fetch_s3_logs(cfg: dict) -> list[dict]:
     session = boto3.Session(
         aws_access_key_id=cfg.get("aws_access_key"),
         aws_secret_access_key=cfg.get("aws_secret_key"),
+        region_name=cfg.get("aws_region", "us-east-1"),
     )
     s3 = session.client("s3")
     bucket = cfg["s3_bucket"]
@@ -48,6 +119,8 @@ def fetch_crashlytics_logs(cfg: dict) -> list[dict]:
 
 def main() -> None:
     cfg = load_settings()
+    cfg = apply_aws_config(cfg)
+
     s3_logs = fetch_s3_logs(cfg)
     crash_logs = fetch_crashlytics_logs(cfg)
     with OUTPUT_FILE.open("w", encoding="utf-8") as f:
