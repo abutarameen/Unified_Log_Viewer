@@ -79,6 +79,12 @@ def apply_aws_config(cfg: dict) -> dict:
         pass
 
     return cfg
+    if SETTINGS_FILE.exists():
+        with SETTINGS_FILE.open("r", encoding="utf-8") as f:
+            return json.load(f)
+    raise RuntimeError(
+        "settings.json not found. Run desktop_unifier.py to configure settings."
+    )
 
 
 def fetch_s3_logs(cfg: dict) -> list[dict]:
@@ -114,6 +120,7 @@ def fetch_crashlytics_logs(cfg: dict) -> list[dict]:
 def main() -> None:
     cfg = load_settings()
     cfg = apply_aws_config(cfg)
+
     s3_logs = fetch_s3_logs(cfg)
     crash_logs = fetch_crashlytics_logs(cfg)
     with OUTPUT_FILE.open("w", encoding="utf-8") as f:
