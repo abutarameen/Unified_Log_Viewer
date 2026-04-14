@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import asyncio
 import os
+from contextlib import asynccontextmanager
+import contextlib
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from typing import Any
@@ -29,7 +31,28 @@ class SignalCoin:
     updated_at: str
 
 
-app = FastAPI(title="Crypt Mainica Backend", version="1.0.0")
+LATEST_TOP10: list[SignalCoin] = []
+
+
+async def _background_updater() -> None:
+    global LATEST_TOP10
+    while True:
+        LATEST_TOP10 = await compute_top(10)
+        await asyncio.sleep(POLL_SECONDS)
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    task = asyncio.create_task(_background_updater())
+    try:
+        yield
+    finally:
+        task.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await task
+
+
+app = FastAPI(title="Crypt Mainica Backend", version="1.0.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -37,8 +60,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-LATEST_TOP10: list[SignalCoin] = []
 
 
 def _float(v: Any) -> float:
@@ -200,13 +221,3 @@ async def signals_ws(websocket: WebSocket) -> None:
     except WebSocketDisconnect:
         return
 
-
-@app.on_event("startup")
-async def startup_refresh() -> None:
-    async def updater() -> None:
-        global LATEST_TOP10
-        while True:
-            LATEST_TOP10 = await compute_top(10)
-            await asyncio.sleep(POLL_SECONDS)
-
-    asyncio.create_task(updater())
