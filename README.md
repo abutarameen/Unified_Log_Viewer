@@ -85,5 +85,6 @@ wscat -c ws://127.0.0.1:8000/ws
 - ViewModel with WebSocket updates: `CoinViewModel.kt`
 - Recycler adapter with signal colors: `CoinAdapter.kt`
 - Row layout: `item_coin.xml`
+- Compose screen: `ui/CoinDashboardScreen.kt`
 
 Use `android_app_sample/README.md` for quick wiring notes.

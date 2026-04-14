@@ -14,6 +14,7 @@ This is a lightweight sample to connect to the FastAPI backend in `realtime_back
 - `CoinViewModel.kt` LiveData state and WebSocket updates.
 - `CoinAdapter.kt` RecyclerView adapter with color-coded signal labels.
 - `item_coin.xml` row layout.
+- `ui/CoinDashboardScreen.kt` Jetpack Compose dashboard screen (includes empty-state `Box` fix).
 
 ## Notes
 
