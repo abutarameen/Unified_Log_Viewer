@@ -1,2 +1,5 @@
 boto3
 google-cloud-bigquery
+fastapi
+uvicorn[standard]
+httpx
