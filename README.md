@@ -1,90 +1,64 @@
-# AI Data Log Unifier + Realtime Coin Signals
+# Crypt Mainica Android + Backend
 
-This repository now contains two runnable parts:
+This repository now contains **two separate runnable projects**:
 
-1. **Log Unifier** (existing functionality).
-2. **Realtime Signal Backend** for Android coin dashboards.
+1. `crypt_mainica_backend/` → FastAPI realtime signal backend.
+2. `crypt_mainica_android/` → Android app project (Manifest + Gradle + Compose UI).
 
-## Requirements
-
-- Python 3.8+
-- AWS credentials with read access to the target S3 bucket
-- Google Cloud credentials with access to the Crashlytics BigQuery dataset
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-## Existing log-unifier usage
-
-```bash
-python log_unifier.py
-```
-
-The script downloads the logs and merges them into `merged_logs.jsonl`.
-
-## Desktop GUI
-
-`desktop_unifier.py` provides a minimal Tkinter interface. Use the **Settings** menu to configure AWS credentials, S3 bucket information, and Crashlytics/Firebase keys such as your BigQuery dataset, Firebase API key, and Crashlytics token. These details are saved to `settings.json` for next time.
-
-Run the GUI with:
-
-```bash
-python desktop_unifier.py
-```
+Legacy log-unifier scripts remain in root (`log_unifier.py`, `desktop_unifier.py`) but are not part of Crypt Mainica.
 
 ---
 
-## Realtime backend (FastAPI + WebSocket)
+## 1) Crypt Mainica Backend
 
-File: `realtime_backend/main.py`
+Location: `crypt_mainica_backend/`
 
-Features:
-
-- Pulls Solana pairs from DexScreener.
-- Applies your MVP filters:
-  - Age < 24h
-  - Liquidity > $10k
-  - 24h Volume > $50k
-- Computes 0-100 score using:
-  - Volume spike
-  - Buy/sell pressure
-  - Whale proxy activity
-  - Liquidity sweet spot
-  - Social proxy momentum
-- Adds rug-risk flags (liquidity and suspicious buy-only activity).
-- Exposes:
-  - `GET /top` for current ranking
-  - `GET /health`
-  - `WS /ws` for live feed every polling interval
-
-Run:
+### Install
 
 ```bash
-uvicorn realtime_backend.main:app --reload --host 0.0.0.0 --port 8000
+pip install -r crypt_mainica_backend/requirements.txt
 ```
 
-Examples:
+### Run
 
 ```bash
-curl http://127.0.0.1:8000/top
+uvicorn crypt_mainica_backend.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-```bash
-wscat -c ws://127.0.0.1:8000/ws
-```
+### Endpoints
 
-## Android sample client
+- `GET /health`
+- `GET /signals/top?top_n=10`
+- `WS /signals/ws`
 
-`android_app_sample/` contains starter Kotlin files (MVVM + Retrofit + WebSocket + RecyclerView item layout) that connect to this backend.
+---
 
-- Model: `CoinSignal.kt`
-- REST API interface: `ApiService.kt`
-- ViewModel with WebSocket updates: `CoinViewModel.kt`
-- Recycler adapter with signal colors: `CoinAdapter.kt`
-- Row layout: `item_coin.xml`
-- Compose screen: `ui/CoinDashboardScreen.kt`
+## 2) Crypt Mainica Android
 
-Use `android_app_sample/README.md` for quick wiring notes.
+Location: `crypt_mainica_android/`
+
+This is now a **real Android app project** with:
+
+- `settings.gradle.kts`
+- Root/app `build.gradle.kts`
+- `AndroidManifest.xml`
+- `MainActivity.kt`
+- Compose UI screen and ViewModel
+- Retrofit + WebSocket networking
+
+### Open and run
+
+1. Open `crypt_mainica_android/` in Android Studio.
+2. Sync Gradle.
+3. Run app on emulator/device.
+4. Ensure backend is running on `http://10.0.2.2:8000` (default emulator host mapping).
+
+If using a physical device, update base URLs in:
+
+- `crypt_mainica_android/app/src/main/java/com/cryptmainica/app/data/Network.kt`
+
+---
+
+## Project rename
+
+The active product name is now **Crypt Mainica** (Android + Backend).

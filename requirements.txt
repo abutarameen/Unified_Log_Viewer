@@ -1,3 +1,4 @@
+# Legacy dependencies for the original log-unifier scripts
 boto3
 google-cloud-bigquery
 fastapi
