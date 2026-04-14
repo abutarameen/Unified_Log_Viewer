@@ -7,6 +7,8 @@
         android:allowBackup="true"
         android:label="Crypt Mainica"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/Theme.CryptMainica">
         <activity
             android:name=".MainActivity"

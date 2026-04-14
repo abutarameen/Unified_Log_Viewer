@@ -53,6 +53,8 @@ This is now a **real Android app project** with:
 3. Run app on emulator/device.
 4. Ensure backend is running on `http://10.0.2.2:8000` (default emulator host mapping).
 
+For emulator HTTP development, cleartext is enabled for `10.0.2.2` via `network_security_config.xml`.
+
 If using a physical device, update base URLs in:
 
 - `crypt_mainica_android/app/src/main/java/com/cryptmainica/app/data/Network.kt`
