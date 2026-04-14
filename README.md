@@ -31,6 +31,8 @@ uvicorn crypt_mainica_backend.main:app --reload --host 0.0.0.0 --port 8000
 - `GET /signals/top?top_n=10`
 - `WS /signals/ws`
 
+Backward compatibility: if you still run from old path `realtime_backend/main.py`, it now forwards to the same app without the deprecated startup hook warning.
+
 ---
 
 ## 2) Crypt Mainica Android
